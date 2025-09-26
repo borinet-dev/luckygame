@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<script>
+		(function() {
+			// 사용자 에이전트 정보를 가져옵니다.
+			var userAgent = navigator.userAgent.toLowerCase();
+
+			// 브라우저가 크롬인지 확인합니다.
+			var isChrome = /chrome/.test(userAgent) && !/edge|edg|opr/.test(userAgent);
+
+			// 크롬이 아니라면 팝업 창을 띄웁니다.
+			if (!isChrome) {
+				alert('이 페이지는 크롬에 최적화되어 있습니다. 크롬 브라우저에서 접속해 주세요.');
+			}
+		})();
+	</script>
+	<style>
+		.count-color { color: red; text-shadow: 2px 2px 2px black; }
+		.info-color { color: yellow; text-shadow: 2px 2px 2px black; }
+		.info-color2 { color: red; text-shadow: 1px 1px 1px black; }
+		.info-color3 { color: black; text-shadow: 1px 1px 1px gray; }
+		.s1 { text-shadow: 4px 4px 5px black; }
+		.s2 { text-shadow: 2px 2px 2px black; }
+		.s3 { text-shadow: 1px 1px 1px black; }
+		.bg-2a2a2a { background-color: #2a2a2a !important; }
+		.bg-2a2a2a .nav-link { color: white !important; transition: color 0.3s ease-in-out; }
+		.bg-2a2a2a .nav-link:hover { color: #90ee90 !important; }
+		.border-bottom { color: red !important; text-decoration: none; transition: color 0.3s ease-in-out; }
+		.border-bottom:hover { color: darkred !important; }
+		body { background-color: #2a2a2a; color: white; font-family: sans-serif; line-height: 1.6; }
+		table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+		th, td { border: 1px solid white; padding: 8px; }
+		th { background-color: #444; }
+		h3 { margin-top: 30px; color: #ffd700; }
+	</style>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1.0" name="viewport">
+	<meta content="" name="keywords">
+	<meta content="" name="description">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">  
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="https://borinet-dev.github.io/css/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="https://borinet-dev.github.io/css/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="https://borinet-dev.github.io/css/lib/lightbox/css/lightbox.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="https://borinet-dev.github.io/css/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+	<link href="https://borinet-dev.github.io/css/css/board.css" rel="stylesheet">
+	<link href="https://borinet-dev.github.io/css/css/style2.css" rel="stylesheet">
+	<link href="https://borinet-dev.github.io/css/css/style3.css" rel="stylesheet">
+</head>
+
+<body style="background-color: #2a2a2a;">
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+    </div>
+    <!-- Spinner End -->
+
+    <!-- Navbar Start -->
+		<!-- Header (외부 include) -->
+		<div id="header-placeholder"></div>
+
+		<script>
+		(function(){
+		  const url = "https://borinet-dev.github.io/head/header.html?ver=" + Date.now();
+		  fetch(url).then(r=>r.text()).then(html=>{
+			const holder = document.getElementById('header-placeholder');
+			// wrapper <div>를 nav로 교체 → sticky-top 정상 동작
+			holder.outerHTML = html;
+
+			// favicon/제목 반영
+			const temp = document.createElement("div");
+			temp.innerHTML = html;
+
+			const fav = temp.querySelector('link[rel="navi-favicon"]');
+			if (fav){
+			  let headIcon = document.head.querySelector("link[rel~='icon']");
+			  if(!headIcon){
+				headIcon=document.createElement('link');
+				headIcon.rel='icon';
+				document.head.appendChild(headIcon);
+			  }
+			  headIcon.href = fav.getAttribute('href');
+			}
+
+			const titleMeta = temp.querySelector('meta[name="web-title"]');
+			if (titleMeta) document.title = titleMeta.content;
+		  }).catch(console.error);
+		})();
+		</script>
+	<!-- Navbar End -->
+
+
+    <!-- Page Header Start -->
+    <div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container text-center py-5">
+            <h1 class="display-3 text-white mb-4 animated slideInDown s2">
+				<font color=yellow>럭키 게임 아이템 리스트</font>
+			</h1>
+        </div>
+    </div>
+    <!-- Page Header End -->
+
+<style>
+  .table-wrapper{
+    display:flex;
+    flex-wrap:wrap;   /* 화면 좁아지면 자동 줄바꿈 */
+    gap:10px;
+    align-items:flex-start;  /* ← 각 테이블 높이 강제 동일화 방지 */
+  }
+  .table-wrapper > table{
+    flex:1 1 300px;   /* 최소 300px, 남는 공간 비율 분배 */
+  }
+</style>
+
+    <!-- Start -->
+<div id="viewer"">
+	<div style="background-color: #2a2a2a; color: white;" class="bd">
+
+<center>
+<img src="https://borinet-dev.github.io/luckygame/npc.png" width="650" height="428"><br>
+<br><br><br>
+  <!-- ========== [일반( normal )] ========== -->
+<table style="color:white; border:1px solid white; border-collapse:collapse; margin:0; border-spacing:0; padding:0; width:300px;">
+	<tr>
+		<th style="color:yellow; border:1px solid white; text-align:center;">일반 럭키 게임</th>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">접속 코인 ×20</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">참치 ×8</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">고등어 ×8</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">새치 ×8</span></td>
+	</tr>
+	<tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">출석 코인 ×30</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">강력 체력 회복제 ×5</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">기란 축복받은 귀환 주문서 ×1</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">컬러 호칭 ×1</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">EXP/SP 부스트 주문서 - 중급 ×1</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">출석보상 경험치의 룬 ×1</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">앤젤 캣의 축복 상자 ×1</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">레어 액세서리 상자 ×1</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">세련된 블루 로맨틱 샤프롱 ×1</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">세련된 골드 로맨틱 샤프롱 ×1</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">세련된 그린 로맨틱 샤프롱 ×1</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">세련된 레드 로맨틱 샤프롱 ×1</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">세련된 옐로 로맨틱 샤프롱 ×1</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">세련된 블랙 로맨틱 샤프롱 ×1</span></td>
+	</tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">나폴레옹 모자 ×1</span></td>
+	</tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">달콤한 치즈 모자 ×1</span></td>
+	</tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">조로 모자 ×1</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">축복의 깃털 ×2</span></td>
+    </tr>
+    <tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">영웅의 속성 수정 상자 ×2</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">프리미엄 럭키 타로 카드 ×3</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">문자 B ×1</span></td>
+    </tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">문자 O ×1</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">문자 R ×1</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">문자 I ×1</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">문자 N ×1</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">문자 E ×1</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">문자 T ×1</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">댄스 오브 파이어 주문서 ×1</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">댄스 오브 워리어 주문서 ×1</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">댄스 오브 미스틱 주문서 ×1</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">무기 강화 주문서 상자 ×1</span></td>
+	</tr>
+	<tr>
+		<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">방어구 강화 주문서 상자 ×1</span></td>
+	</tr>
+  </table>
+
+<br><br><br>
+
+<div class="table-wrapper">
+	  <!-- ========== [프리미엄( premium ) - COMMON_REWARD] ========== -->
+	<table style="color:white; border:1px solid white; border-collapse:collapse; margin:0; border-spacing:0; padding:0; width:300px;">
+		<tr>
+			<th style="color:yellow; border:1px solid white; text-align:center;">프리미엄 럭키 게임</th>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">참치 ×15</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">고등어 ×15</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">새치 ×15</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">기란 축복받은 귀환 주문서 ×5</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">컬러 호칭 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">마검 자리체(외변용) ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">혈검 아카마나프(외변용) ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">강력 체력 회복제 ×20</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">문자 B ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">문자 O ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">문자 R ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">문자 I ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">문자 N ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">문자 E ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">문자 T ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">EXP/SP 부스트 주문서 - 상급 ×3</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">앤젤 캣의 축복 상자 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">출석보상 경험치의 룬 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">최상급 생명의 돌 ×5</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">축복의 깃털 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">드래곤의 특별한 열매 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">해적단의 특별한 열매 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">물의 별 조각 ×5</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">불의 별 조각 ×5</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">바람의 별 조각 ×5</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">대지의 별 조각 ×5</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">젬스톤 - R그레이드 ×25</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">댄스 오브 파이어 주문서 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">댄스 오브 워리어 주문서 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">댄스 오브 미스틱 주문서 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">레어 액세서리 상자 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">무기 강화 주문서 상자 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">방어구 강화 주문서 상자 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">갑옷 강화 주문서-R그레이드 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">무기 강화 주문서-R그레이드 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">세련된 블루 로맨틱 샤프롱 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">세련된 골드 로맨틱 샤프롱 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">세련된 그린 로맨틱 샤프롱 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">세련된 레드 로맨틱 샤프롱 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">세련된 옐로 로맨틱 샤프롱 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">세련된 블랙 로맨틱 샤프롱 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">나폴레옹 모자 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">달콤한 치즈 모자 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">조로 모자 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">영웅의 속성 수정 상자 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">원석 상자 ×3</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">프리미엄 럭키 타로 카드 ×3</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">무기 교환권 - C ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">무기 교환권 - B ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">무기 교환권 - A ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">방어구 교환권 - C ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">방어구 교환권 - B ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">방어구 교환권 - A ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 헬멧 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 흉갑 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 각반 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 건틀렛 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 부츠 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 실드 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 레더 헬멧 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 레더 아머 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 레더 레깅스 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 레더 글로브 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 레더 부츠 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 서클릿 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 튜닉 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 호즈 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 글로브 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 슈즈 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 카데이라 시길 재료 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 아포칼립스 셰이퍼 조각 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 아포칼립스 커터 조각 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 아포칼립스 슬래셔 조각 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 아포칼립스 어벤져 조각 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 아포칼립스 파이터 조각 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 아포칼립스 스토머 조각 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 아포칼립스 스로워 조각 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 아포칼립스 버스터 조각 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 아포칼립스 캐스터 조각 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미확인의 아포칼립스 레트리뷰터 조각 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">힘의 염료<Str+4 Con-2> ×1</span></td>
+		</tr>	
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">힘의 염료<Str+4 Dex-2> ×1</span></td>
+		</tr>	
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">체력의 염료<Con+4 Str-2> ×1</span></td>
+		</tr>	
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">체력의 염료<Con+4 Dex-2> ×1</span></td>
+		</tr>	
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">민첩의 염료<Dex+4 Str-2> ×1</span></td>
+		</tr>	
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">민첩의 염료<Dex+4 Con-2> ×1</span></td>
+		</tr>	
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">지능의 염료<Int+4 Men-2> ×1</span></td>
+		</tr>	
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">지능의 염료<Int+4 Wit-2> ×1</span></td>
+		</tr>	
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">정신의 염료<Men+4 Int-2> ×1</span></td>
+		</tr>	
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">정신의 염료<Men+4 Wit-2> ×1</span></td>
+		</tr>	
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">재치의 염료<Wit+4 Int-2> ×1</span></td>
+		</tr>	
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">재치의 염료<Wit+4 Men-2> ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">축복받은 갑옷 강화 주문서-R그레이드 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">축복받은 무기 강화 주문서-R그레이드 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">파멸의 갑옷 강화 주문서-R그레이드 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">파멸의 무기 강화 주문서-R그레이드 ×1</span></td>
+		</tr>
+	</table>
+</td>
+<td style="vertical-align:top;">
+	  <!-- ========== [프리미엄( premium ) - MODIFY_REWARD (확정 1개 이상)] ========== -->
+	<table style="color:white; border:1px solid white; border-collapse:collapse; margin:0; border-spacing:0; padding:0; width:300px;">
+		<tr>
+			<th style="color:yellow; border:1px solid white; text-align:center;">프리미엄 럭키 게임 (50회 진행시) 최소 1개 획득</th>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">접속코인 ×30</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">S급 무기 상자 - 이벤트 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">아키서스의 주문서 ×3</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">축복받은 무기 강화 주문서 상자 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">축복받은 방어구 강화 주문서 상자 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">R급 재료상자 ×5</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">영웅의 파멸 강화 주문서 상자 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">미션 완료 티켓 ×2</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">+10 무기 교환권 - C ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">+10 방어구 교환권 - C ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">+10 무기 교환권 - B ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">+10 방어구 교환권 - B ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">MOPP 피아식별 부적 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">+16 무기 교환권 - B ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">+16 방어구 교환권 - B ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">잊혀진 유물 ×70</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">수도원 유물 ×30</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">파멸의 갑옷 강화 주문서-R그레이드 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">파멸의 무기 강화 주문서-R그레이드 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">아포칼립스 무기 상자 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">카데이라 방어구 상자 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">장비 강화 주문서 상자 ×1</span></td>
+		</tr>
+		<tr>
+			<td style="color:white; border:1px solid white; text-align:center;"><span class="item-name">블랙 쿠폰 ×1</span></td>
+		</tr>
+	</table>
+</div>
+
+  <br>
+
+</center>
+	</div>
+</div>
+<br><br>
+   <!-- End -->
+        
+
+    <!-- Copyright Start -->
+	<div id="footer-placeholder"></div>
+	<script>
+	  fetch("https://borinet-dev.github.io/head/footer.html?ver=" + Date.now())
+	    .then(r => r.text())
+	    .then(html => {
+	      document.getElementById("footer-placeholder").innerHTML = html;
+	    });
+	</script>
+    <!-- Copyright End -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://borinet-dev.github.io/css/lib/wow/wow.min.js"></script>
+	<script src="https://borinet-dev.github.io/css/lib/easing/easing.min.js"></script>
+	<script src="https://borinet-dev.github.io/css/lib/waypoints/waypoints.min.js"></script>
+	<script src="https://borinet-dev.github.io/css/lib/owlcarousel/owl.carousel.min.js"></script>
+	<script src="https://borinet-dev.github.io/css/lib/counterup/counterup.min.js"></script>
+	<script src="https://borinet-dev.github.io/css/lib/parallax/parallax.min.js"></script>
+	<script src="https://borinet-dev.github.io/css/lib/isotope/isotope.pkgd.min.js"></script>
+	<script src="https://borinet-dev.github.io/css/lib/lightbox/js/lightbox.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="https://borinet-dev.github.io/css/js/main.js"></script>
+    </body>
+</html>
+
+
